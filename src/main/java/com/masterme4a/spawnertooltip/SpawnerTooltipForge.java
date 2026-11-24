@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,7 +46,7 @@ public class SpawnerTooltipForge {
             if (tag.contains("gs_storage_items")) appendStorage(tag.getString("gs_storage_items"), event);
         }
 
-        private static StringTextComponent label(String label, String value) {
+        private static IFormattableTextComponent label(String label, String value) {
             return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
                     .appendSibling(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
         }

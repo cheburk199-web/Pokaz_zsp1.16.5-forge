@@ -13,12 +13,16 @@ jobs:
           distribution: temurin
           java-version: '8'
       - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-disabled: true
       - name: Install Gradle 6.9.1
         run: |
           curl -L https://services.gradle.org/distributions/gradle-6.9.1-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d "$HOME"
+      - name: Clean ForgeGradle mapping cache
+        run: rm -rf "$HOME/.gradle/caches/forge_gradle"
       - name: Build mod
-        run: "$HOME/gradle-6.9.1/bin/gradle --no-daemon build"
+        run: "$HOME/gradle-6.9.1/bin/gradle --no-daemon --refresh-dependencies clean build"
       - uses: actions/upload-artifact@v4
         with:
           name: spawner-tooltip-forge-1165

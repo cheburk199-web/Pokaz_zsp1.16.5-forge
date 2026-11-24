@@ -5,7 +5,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.17'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.16'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -24,8 +24,7 @@ repositories {
 }
 
 minecraft {
-    // Use a widely mirrored MCP snapshot mapping for 1.16.5.
-    mappings channel: 'snapshot', version: '20200514-1.16.5'
+    mappings channel: 'snapshot', version: '20210309-1.16.5'
     runs {
         client {
             workingDirectory project.file('run')

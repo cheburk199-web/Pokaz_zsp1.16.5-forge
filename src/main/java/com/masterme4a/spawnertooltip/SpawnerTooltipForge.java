@@ -47,7 +47,7 @@ public class SpawnerTooltipForge {
 
         private static StringTextComponent label(String label, String value) {
             return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
-                    .append(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
+                    .appendSibling(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
         }
 
         private static void appendSword(String json, ItemTooltipEvent event) {
@@ -56,10 +56,10 @@ public class SpawnerTooltipForge {
                 String name = getString(obj, "name", "Неизвестный меч");
                 String type = getString(obj, "type", "");
                 event.getToolTip().add(new StringTextComponent("Меч: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
-                        .append(new StringTextComponent(name).setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA))));
+                        .appendSibling(new StringTextComponent(name).setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA))));
                 if (!type.isEmpty())
                     event.getToolTip().add(new StringTextComponent("Тип: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.DARK_GRAY))
-                            .append(new StringTextComponent(swordType(type)).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE))));
+                            .appendSibling(new StringTextComponent(swordType(type)).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE))));
 
                 if (obj.has("enchants") && obj.get("enchants").isJsonObject()) {
                     JsonObject enchants = obj.getAsJsonObject("enchants");

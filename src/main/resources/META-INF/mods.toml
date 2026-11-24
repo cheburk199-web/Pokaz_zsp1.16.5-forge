@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="All Rights Reserved"
+[[mods]]
+modId="spawnertooltip"
+version="1.0.0-forge"
+displayName="Spawner Tooltip (Forge)"
+description='''Client tooltip for custom spawner data on Minecraft 1.16.5.'''
+[[dependencies.spawnertooltip]]
+modId="forge"
+mandatory=true
+versionRange="[36.2.0,)"
+ordering="NONE"
+side="CLIENT"
+[[dependencies.spawnertooltip]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.16.5]"
+ordering="NONE"
+side="CLIENT"

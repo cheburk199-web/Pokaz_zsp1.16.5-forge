@@ -27,7 +27,7 @@ public class SpawnerTooltipForge {
 
             event.getToolTip().add(new StringTextComponent(" "));
             event.getToolTip().add(new StringTextComponent("Данные золотого спавнера")
-                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA, TextFormatting.BOLD)));
+                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA).applyFormatting(TextFormatting.BOLD)));
 
             if (tag.contains("gs_sword_item")) appendSword(tag.getString("gs_sword_item"), event);
 

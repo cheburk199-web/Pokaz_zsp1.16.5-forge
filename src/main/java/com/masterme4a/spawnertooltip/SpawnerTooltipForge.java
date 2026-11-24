@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -21,12 +22,12 @@ public class SpawnerTooltipForge {
     public static class ClientEvents {
         @SubscribeEvent
         public static void onItemTooltip(ItemTooltipEvent event) {
-            CompoundNBT tag = event.getItem().getTag();
+            CompoundNBT tag = event.getItemStack().getTag();
             if (tag == null || !tag.contains("gs_marker")) return;
 
             event.getToolTip().add(new StringTextComponent(" "));
             event.getToolTip().add(new StringTextComponent("Данные золотого спавнера")
-                    .withStyle(TextFormatting.AQUA, TextFormatting.BOLD));
+                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA, TextFormatting.BOLD)));
 
             if (tag.contains("gs_sword_item")) appendSword(tag.getString("gs_sword_item"), event);
 
@@ -45,8 +46,8 @@ public class SpawnerTooltipForge {
         }
 
         private static StringTextComponent label(String label, String value) {
-            return new StringTextComponent(label).withStyle(TextFormatting.GRAY)
-                    .append(new StringTextComponent(value).withStyle(TextFormatting.WHITE));
+            return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
+                    .append(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
         }
 
         private static void appendSword(String json, ItemTooltipEvent event) {
@@ -54,29 +55,29 @@ public class SpawnerTooltipForge {
                 JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
                 String name = getString(obj, "name", "Неизвестный меч");
                 String type = getString(obj, "type", "");
-                event.getToolTip().add(new StringTextComponent("Меч: ").withStyle(TextFormatting.GRAY)
-                        .append(new StringTextComponent(name).withStyle(TextFormatting.AQUA)));
+                event.getToolTip().add(new StringTextComponent("Меч: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
+                        .append(new StringTextComponent(name).setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA))));
                 if (!type.isEmpty())
-                    event.getToolTip().add(new StringTextComponent("Тип: ").withStyle(TextFormatting.DARK_GRAY)
-                            .append(new StringTextComponent(swordType(type)).withStyle(TextFormatting.WHITE)));
+                    event.getToolTip().add(new StringTextComponent("Тип: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.DARK_GRAY))
+                            .append(new StringTextComponent(swordType(type)).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE))));
 
                 if (obj.has("enchants") && obj.get("enchants").isJsonObject()) {
                     JsonObject enchants = obj.getAsJsonObject("enchants");
                     if (!enchants.entrySet().isEmpty()) {
-                        event.getToolTip().add(new StringTextComponent("Чары:").withStyle(TextFormatting.GRAY));
+                        event.getToolTip().add(new StringTextComponent("Чары:").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY)));
                         for (Map.Entry<String, JsonElement> entry : enchants.entrySet()) {
                             String key = entry.getKey();
                             if (key.contains(":")) key = key.substring(key.indexOf(':') + 1);
                             String level = entry.getValue().isJsonPrimitive()
                                     ? entry.getValue().getAsString() : entry.getValue().toString();
                             event.getToolTip().add(new StringTextComponent(" • " + enchantName(key) + " " + level)
-                                    .withStyle(TextFormatting.LIGHT_PURPLE));
+                                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE)));
                         }
                     }
                 }
             } catch (Exception ignored) {
                 event.getToolTip().add(new StringTextComponent("Не удалось прочитать данные меча")
-                        .withStyle(TextFormatting.RED));
+                        .setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED)));
             }
         }
 
@@ -84,14 +85,14 @@ public class SpawnerTooltipForge {
             try {
                 JsonElement root = new JsonParser().parse(json);
                 if (!root.isJsonArray()) return;
-                event.getToolTip().add(new StringTextComponent("Хранилище:").withStyle(TextFormatting.GOLD));
+                event.getToolTip().add(new StringTextComponent("Хранилище:").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GOLD)));
                 for (JsonElement el : root.getAsJsonArray()) {
                     if (!el.isJsonObject()) continue;
                     JsonObject item = el.getAsJsonObject();
                     String name = getString(item, "name", "Предмет");
                     String amount = getString(item, "amount", "1");
                     event.getToolTip().add(new StringTextComponent(" • " + name + " x" + amount)
-                            .withStyle(TextFormatting.WHITE));
+                            .setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
                 }
             } catch (Exception ignored) { }
         }

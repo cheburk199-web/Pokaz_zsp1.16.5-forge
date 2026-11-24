@@ -13,12 +13,12 @@ jobs:
           distribution: temurin
           java-version: '8'
       - uses: gradle/actions/setup-gradle@v3
-      - name: Install Gradle 7.3.3
+      - name: Install Gradle 6.9.1
         run: |
-          curl -L https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -o /tmp/gradle.zip
+          curl -L https://services.gradle.org/distributions/gradle-6.9.1-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d "$HOME"
       - name: Build mod
-        run: "$HOME/gradle-7.3.3/bin/gradle --no-daemon build"
+        run: "$HOME/gradle-6.9.1/bin/gradle --no-daemon build"
       - uses: actions/upload-artifact@v4
         with:
           name: spawner-tooltip-forge-1165

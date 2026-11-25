@@ -27,8 +27,10 @@ public class SpawnerTooltipForge {
             if (tag == null || !tag.contains("gs_marker")) return;
 
             event.getToolTip().add(new StringTextComponent(" "));
-            event.getToolTip().add(new StringTextComponent("Данные золотого спавнера")
-                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA).applyFormatting(TextFormatting.BOLD)));
+            boolean farmerSpawner = tag.contains("gs_sword_item") && isFarmerSword(tag.getString("gs_sword_item"));
+            event.getToolTip().add(new StringTextComponent(farmerSpawner ? "✦ ФАРМЕРСКИЙ СПАВНЕР ✦" : "Данные золотого спавнера")
+                    .setStyle(Style.EMPTY.applyFormatting(farmerSpawner ? TextFormatting.LIGHT_PURPLE : TextFormatting.AQUA)
+                            .applyFormatting(TextFormatting.BOLD)));
 
             if (tag.contains("gs_sword_item")) appendSword(tag.getString("gs_sword_item"), event);
 
@@ -37,18 +39,32 @@ public class SpawnerTooltipForge {
             if (total > 0) {
                 long killed = Math.max(0L, Math.min(total, total - remaining));
                 int percent = (int) Math.round(killed * 100.0 / total);
-                event.getToolTip().add(label("Убито мобов: ", killed + " / " + total + " (" + percent + "%)"));
+                event.getToolTip().add(label("Убито мобов: ", killed + " / " + total + " (" + percent + "%)", farmerSpawner));
             }
             if (tag.contains("gs_mob_type"))
-                event.getToolTip().add(label("Тип моба: ", mobName(tag.getString("gs_mob_type"))));
+                event.getToolTip().add(label("Тип моба: ", mobName(tag.getString("gs_mob_type")), farmerSpawner));
             if (tag.contains("gs_total_eggs"))
-                event.getToolTip().add(label("Вставлено яиц: ", String.valueOf(tag.getLong("gs_total_eggs"))));
-            if (tag.contains("gs_storage_items")) appendStorage(tag.getString("gs_storage_items"), event);
+                event.getToolTip().add(label("Вставлено яиц: ", String.valueOf(tag.getLong("gs_total_eggs")), farmerSpawner));
+            if (tag.contains("gs_storage_items")) appendStorage(tag.getString("gs_storage_items"), event, farmerSpawner);
         }
 
-        private static IFormattableTextComponent label(String label, String value) {
-            return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
-                    .appendSibling(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
+        private static IFormattableTextComponent label(String label, String value, boolean farmer) {
+            TextFormatting labelColor = farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
+            TextFormatting valueColor = farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.WHITE;
+            return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(labelColor))
+                    .appendSibling(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(valueColor)));
+        }
+
+        private static boolean isFarmerSword(String json) {
+            try {
+                JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
+                if (!obj.has("enchants") || !obj.get("enchants").isJsonObject()) return false;
+                for (Map.Entry<String, JsonElement> entry : obj.getAsJsonObject("enchants").entrySet()) {
+                    String key = entry.getKey().toLowerCase();
+                    if (key.contains("mob-farmer-enchant") || key.contains("farmer")) return true;
+                }
+            } catch (Exception ignored) { }
+            return false;
         }
 
         private static void appendSword(String json, ItemTooltipEvent event) {
@@ -56,8 +72,13 @@ public class SpawnerTooltipForge {
                 JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
                 String name = getString(obj, "name", "Неизвестный меч");
                 String type = getString(obj, "type", "");
-                event.getToolTip().add(new StringTextComponent("Меч: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GRAY))
-                        .appendSibling(new StringTextComponent(name).setStyle(Style.EMPTY.applyFormatting(TextFormatting.AQUA))));
+                boolean farmer = isFarmerSword(json);
+                event.getToolTip().add(new StringTextComponent(farmer ? "✦ ФАРМЕР: " : "Меч: ")
+                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY)
+                                .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET))
+                        .appendSibling(new StringTextComponent(name)
+                                .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.AQUA)
+                                        .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET))));
                 if (!type.isEmpty())
                     event.getToolTip().add(new StringTextComponent("Тип: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.DARK_GRAY))
                             .appendSibling(new StringTextComponent(swordType(type)).setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE))));
@@ -71,8 +92,10 @@ public class SpawnerTooltipForge {
                             if (key.contains(":")) key = key.substring(key.indexOf(':') + 1);
                             String level = entry.getValue().isJsonPrimitive()
                                     ? entry.getValue().getAsString() : entry.getValue().toString();
-                            event.getToolTip().add(new StringTextComponent(" • " + enchantName(key) + " " + level)
-                                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE)));
+                            boolean farmerEnchant = key.toLowerCase().contains("mob-farmer-enchant") || key.toLowerCase().contains("farmer");
+                            event.getToolTip().add(new StringTextComponent(farmerEnchant ? " ✦ " + enchantName(key) + " " + level + " ✦" : " • " + enchantName(key) + " " + level)
+                                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE)
+                                            .applyFormatting(farmerEnchant ? TextFormatting.BOLD : TextFormatting.RESET)));
                         }
                     }
                 }
@@ -82,18 +105,20 @@ public class SpawnerTooltipForge {
             }
         }
 
-        private static void appendStorage(String json, ItemTooltipEvent event) {
+        private static void appendStorage(String json, ItemTooltipEvent event, boolean farmer) {
             try {
                 JsonElement root = new JsonParser().parse(json);
                 if (!root.isJsonArray()) return;
-                event.getToolTip().add(new StringTextComponent("Хранилище:").setStyle(Style.EMPTY.applyFormatting(TextFormatting.GOLD)));
+                event.getToolTip().add(new StringTextComponent(farmer ? "✦ Хранилище фармера:" : "Хранилище:")
+                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GOLD)
+                                .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET)));
                 for (JsonElement el : root.getAsJsonArray()) {
                     if (!el.isJsonObject()) continue;
                     JsonObject item = el.getAsJsonObject();
                     String name = getString(item, "name", "Предмет");
                     String amount = getString(item, "amount", "1");
                     event.getToolTip().add(new StringTextComponent(" • " + name + " x" + amount)
-                            .setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE)));
+                            .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.WHITE)));
                 }
             } catch (Exception ignored) { }
         }

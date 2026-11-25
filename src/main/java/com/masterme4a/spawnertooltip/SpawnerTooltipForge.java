@@ -29,7 +29,7 @@ public class SpawnerTooltipForge {
             event.getToolTip().add(new StringTextComponent(" "));
             boolean farmerSpawner = tag.contains("gs_sword_item") && isFarmerSword(tag.getString("gs_sword_item"));
             event.getToolTip().add(new StringTextComponent(farmerSpawner ? "✦ ФАРМЕРСКИЙ СПАВНЕР ✦" : "Данные золотого спавнера")
-                    .setStyle(Style.EMPTY.applyFormatting(farmerSpawner ? TextFormatting.LIGHT_PURPLE : TextFormatting.AQUA)
+                    .setStyle(Style.EMPTY.applyFormatting(farmerSpawner ? TextFormatting.YELLOW : TextFormatting.AQUA)
                             .applyFormatting(TextFormatting.BOLD)));
 
             if (tag.contains("gs_sword_item")) appendSword(tag.getString("gs_sword_item"), event);
@@ -49,8 +49,8 @@ public class SpawnerTooltipForge {
         }
 
         private static IFormattableTextComponent label(String label, String value, boolean farmer) {
-            TextFormatting labelColor = farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
-            TextFormatting valueColor = farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.WHITE;
+            TextFormatting labelColor = farmer ? TextFormatting.GOLD : TextFormatting.GRAY;
+            TextFormatting valueColor = farmer ? TextFormatting.YELLOW : TextFormatting.WHITE;
             return new StringTextComponent(label).setStyle(Style.EMPTY.applyFormatting(labelColor))
                     .appendSibling(new StringTextComponent(value).setStyle(Style.EMPTY.applyFormatting(valueColor)));
         }
@@ -74,10 +74,10 @@ public class SpawnerTooltipForge {
                 String type = getString(obj, "type", "");
                 boolean farmer = isFarmerSword(json);
                 event.getToolTip().add(new StringTextComponent(farmer ? "✦ ФАРМЕР: " : "Меч: ")
-                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY)
+                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.GOLD : TextFormatting.GRAY)
                                 .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET))
                         .appendSibling(new StringTextComponent(name)
-                                .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.AQUA)
+                                .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.YELLOW : TextFormatting.AQUA)
                                         .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET))));
                 if (!type.isEmpty())
                     event.getToolTip().add(new StringTextComponent("Тип: ").setStyle(Style.EMPTY.applyFormatting(TextFormatting.DARK_GRAY))
@@ -94,7 +94,7 @@ public class SpawnerTooltipForge {
                                     ? entry.getValue().getAsString() : entry.getValue().toString();
                             boolean farmerEnchant = key.toLowerCase().contains("mob-farmer-enchant") || key.toLowerCase().contains("farmer");
                             event.getToolTip().add(new StringTextComponent(farmerEnchant ? " ✦ " + enchantName(key) + " " + level + " ✦" : " • " + enchantName(key) + " " + level)
-                                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.LIGHT_PURPLE)
+                                    .setStyle(Style.EMPTY.applyFormatting(TextFormatting.YELLOW)
                                             .applyFormatting(farmerEnchant ? TextFormatting.BOLD : TextFormatting.RESET)));
                         }
                     }
@@ -110,7 +110,7 @@ public class SpawnerTooltipForge {
                 JsonElement root = new JsonParser().parse(json);
                 if (!root.isJsonArray()) return;
                 event.getToolTip().add(new StringTextComponent(farmer ? "✦ Хранилище фармера:" : "Хранилище:")
-                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.DARK_PURPLE : TextFormatting.GOLD)
+                        .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.GOLD : TextFormatting.GOLD)
                                 .applyFormatting(farmer ? TextFormatting.BOLD : TextFormatting.RESET)));
                 for (JsonElement el : root.getAsJsonArray()) {
                     if (!el.isJsonObject()) continue;
@@ -118,7 +118,7 @@ public class SpawnerTooltipForge {
                     String name = getString(item, "name", "Предмет");
                     String amount = getString(item, "amount", "1");
                     event.getToolTip().add(new StringTextComponent(" • " + name + " x" + amount)
-                            .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.LIGHT_PURPLE : TextFormatting.WHITE)));
+                            .setStyle(Style.EMPTY.applyFormatting(farmer ? TextFormatting.YELLOW : TextFormatting.WHITE)));
                 }
             } catch (Exception ignored) { }
         }
